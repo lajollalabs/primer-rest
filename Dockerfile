@@ -9,7 +9,10 @@ RUN apt-get install -y vim
 
 RUN apt-get install -y nginx
 
-RUN apt install -y nodejs && apt install -y npm
+RUN apt install -y nodejs
+
+RUN apt-get update
+RUN apt install -y npm
 
 RUN apt install -y screen 
 
@@ -23,7 +26,7 @@ RUN chmod +x /root/install-nvm.sh
 
 RUN ls /root/.ssh/
 
-RUN eval `ssh-agent -s` && ssh-add /root/.ssh/id_ed25519
+#RUN eval `ssh-agent -s` && ssh-add /root/.ssh/id_ed25519
 
 RUN ssh-keyscan github.com >> $HOME/.ssh/known_hosts
 
