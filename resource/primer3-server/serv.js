@@ -34,35 +34,39 @@ httpsServer.listen(443);
 app.post('/', ( req, res ) => {
 	let input_f = null;
 	var seq = req.body.seq;
-	if (req.body.left) {
+	if (seq.body.right) {
+		console.log ( 'Variant primers' );
+		var right = seq.body.right;
 		input_f = `SEQUENCE_ID=example
-		SEQUENCE_TEMPLATE=${seq}
-		SEQUENCE_FORCE_LEFT_END=${left}
-		PRIMER_TASK=generic
-		PRIMER_PICK_LEFT_PRIMER=1
-		PRIMER_PICK_INTERNAL_OLIGO=0
-		PRIMER_PICK_RIGHT_PRIMER=1
-		PRIMER_OPT_SIZE=20
-		PRIMER_MIN_SIZE=18
-		PRIMER_MAX_SIZE=22
-		PRIMER_PRODUCT_SIZE_RANGE=75-350
-		PRIMER_EXPLAIN_FLAG=1
-		=
-		`
+SEQUENCE_TEMPLATE=${seq}
+SEQUENCE_FORCE_LEFT_END=${right}
+PRIMER_TASK=generic
+PRIMER_PICK_LEFT_PRIMER=1
+PRIMER_PICK_INTERNAL_OLIGO=0
+PRIMER_PICK_RIGHT_PRIMER=1
+PRIMER_OPT_SIZE=20
+PRIMER_MIN_SIZE=18
+PRIMER_MAX_SIZE=30
+PRIMER_MIN_TM=52
+PRIMER_PRODUCT_SIZE_RANGE=75-350
+PRIMER_EXPLAIN_FLAG=1
+=
+`
 	} else {
+		console.log ( 'Regular primer probe' );
 		input_f = `SEQUENCE_ID=example
-	SEQUENCE_TEMPLATE=${seq}
-	PRIMER_TASK=generic
-	PRIMER_PICK_LEFT_PRIMER=1
-	PRIMER_PICK_INTERNAL_OLIGO=0
-	PRIMER_PICK_RIGHT_PRIMER=1
-	PRIMER_OPT_SIZE=20
-	PRIMER_MIN_SIZE=18
-	PRIMER_MAX_SIZE=22
-	PRIMER_PRODUCT_SIZE_RANGE=75-150
-	PRIMER_EXPLAIN_FLAG=1
-	=
-	`
+SEQUENCE_TEMPLATE=${seq}
+PRIMER_TASK=generic
+PRIMER_PICK_LEFT_PRIMER=1
+PRIMER_PICK_INTERNAL_OLIGO=0
+PRIMER_PICK_RIGHT_PRIMER=1
+PRIMER_OPT_SIZE=20
+PRIMER_MIN_SIZE=18
+PRIMER_MAX_SIZE=22
+PRIMER_PRODUCT_SIZE_RANGE=75-150
+PRIMER_EXPLAIN_FLAG=1
+=
+`
 	}
 	return enya (input_f, res);
 
@@ -71,8 +75,7 @@ app.post('/', ( req, res ) => {
 
 app.get ('/', ( req, res ) => {
 	var seq = req.param('seq')
-
-	var seq = req.param('seq')
+	console.log( 'Check' );
 	var input_f = `SEQUENCE_ID=example
 SEQUENCE_TEMPLATE=${seq}
 PRIMER_TASK=generic
