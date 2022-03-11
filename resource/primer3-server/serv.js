@@ -31,17 +31,27 @@ var httpsServer = https.createServer(credentials, app);
 httpServer.listen(80);
 httpsServer.listen(443);
 
-app.post('/oligos', ( req, res ) => {
-	var oligos = req.body.oligos;
-	return oligotm (oligos, res);
-})
-
-app.post('/forceleft', ( req, res )=> {
+app.post('/', ( req, res ) => {
+	let input_f = null;
 	var seq = req.body.seq;
-	var left = req.body.left;
-	var input_f =  `SEQUENCE_ID=example
+	if (req.body.left) {
+		input_f = `SEQUENCE_ID=example
+		SEQUENCE_TEMPLATE=${seq}
+		SEQUENCE_FORCE_LEFT_END=${left}
+		PRIMER_TASK=generic
+		PRIMER_PICK_LEFT_PRIMER=1
+		PRIMER_PICK_INTERNAL_OLIGO=0
+		PRIMER_PICK_RIGHT_PRIMER=1
+		PRIMER_OPT_SIZE=20
+		PRIMER_MIN_SIZE=18
+		PRIMER_MAX_SIZE=22
+		PRIMER_PRODUCT_SIZE_RANGE=75-350
+		PRIMER_EXPLAIN_FLAG=1
+		=
+		`
+	} else {
+		input_f = `SEQUENCE_ID=example
 	SEQUENCE_TEMPLATE=${seq}
-	SEQUENCE_FORCE_LEFT_END=${left}
 	PRIMER_TASK=generic
 	PRIMER_PICK_LEFT_PRIMER=1
 	PRIMER_PICK_INTERNAL_OLIGO=0
@@ -49,29 +59,11 @@ app.post('/forceleft', ( req, res )=> {
 	PRIMER_OPT_SIZE=20
 	PRIMER_MIN_SIZE=18
 	PRIMER_MAX_SIZE=22
-	PRIMER_PRODUCT_SIZE_RANGE=75-350
+	PRIMER_PRODUCT_SIZE_RANGE=75-150
 	PRIMER_EXPLAIN_FLAG=1
 	=
 	`
-	return enya (input_f, res);
-});
-
-
-app.post('/', ( req, res ) => {
-	var seq = req.body.seq;
-	var input_f = `SEQUENCE_ID=example
-SEQUENCE_TEMPLATE=${seq}
-PRIMER_TASK=generic
-PRIMER_PICK_LEFT_PRIMER=1
-PRIMER_PICK_INTERNAL_OLIGO=0
-PRIMER_PICK_RIGHT_PRIMER=1
-PRIMER_OPT_SIZE=20
-PRIMER_MIN_SIZE=18
-PRIMER_MAX_SIZE=22
-PRIMER_PRODUCT_SIZE_RANGE=75-150
-PRIMER_EXPLAIN_FLAG=1
-=
-`
+	}
 	return enya (input_f, res);
 
 });
