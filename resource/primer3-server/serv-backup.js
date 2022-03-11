@@ -31,31 +31,6 @@ var httpsServer = https.createServer(credentials, app);
 httpServer.listen(80);
 httpsServer.listen(443);
 
-app.post('/oligos', ( req, res ) => {
-	var oligos = req.body.oligos;
-	return oligotm (oligos, res);
-})
-
-app.post('/forceleft', ( req, res )=> {
-	var seq = req.body.seq;
-	var left = req.body.left;
-	var input_f =  `SEQUENCE_ID=example
-	SEQUENCE_TEMPLATE=${seq}
-	SEQUENCE_FORCE_LEFT_END=${left}
-	PRIMER_TASK=generic
-	PRIMER_PICK_LEFT_PRIMER=1
-	PRIMER_PICK_INTERNAL_OLIGO=0
-	PRIMER_PICK_RIGHT_PRIMER=1
-	PRIMER_OPT_SIZE=20
-	PRIMER_MIN_SIZE=18
-	PRIMER_MAX_SIZE=22
-	PRIMER_PRODUCT_SIZE_RANGE=75-350
-	PRIMER_EXPLAIN_FLAG=1
-	=
-	`
-	return enya (input_f, res);
-});
-
 
 app.post('/', ( req, res ) => {
 	var seq = req.body.seq;
@@ -97,27 +72,6 @@ PRIMER_EXPLAIN_FLAG=1
 	return enya (input_f, res);
 
 });
-
-function oligotm ( oligos, res ) {
-	let tms = {}
-	for ( const [oligo, seq] of Object.entries(oligos)) {
-		try {
-			exec(`./primer3/src/oligotm ${seq}`, ( error, data, getter ) => {
-				if ( error ) {
-					console.log('error', error.message);
-					return;
-				}
-				tms[oligo] = data
-			})
-
-		} catch ( err ) {
-			console.error ( err )
-		}
-	}
-	return res.json ( tms );
-}
-
-
 
 function enya (input_f, res) {
 
