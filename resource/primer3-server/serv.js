@@ -36,9 +36,9 @@ app.post('/', ( req, res ) => {
 	//Primer3 just assumes that they are arbitrary.
 	let input_f = null;
 	var seq = req.body.seq;
-	if (seq.body.right) {
+	if (req.body.right) {
 		console.log ( 'Variant primers' );
-		var right = seq.body.right;
+		var right = req.body.right;
 		input_f = `SEQUENCE_ID=example
 SEQUENCE_TEMPLATE=${seq}
 SEQUENCE_FORCE_LEFT_END=${right}
@@ -54,9 +54,9 @@ PRIMER_PRODUCT_SIZE_RANGE=75-350
 PRIMER_EXPLAIN_FLAG=1
 =
 `
-	} else if (seq.body.left) {
+	} else if (req.body.left) {
 		console.log ( 'Variant primers' );
-		var left = seq.body.left;
+		var left = req.body.left;
 		input_f = `SEQUENCE_ID=example
 SEQUENCE_TEMPLATE=${seq}
 SEQUENCE_FORCE_RIGHT_END=${left}
@@ -72,9 +72,9 @@ PRIMER_PRODUCT_SIZE_RANGE=75-350
 PRIMER_EXPLAIN_FLAG=1
 =
 `
-	} else if (seq.body.probe) {
+	} else if (req.body.probe) {
 		console.log ( 'Variant primers' );
-		var mid = seq.body.mid;
+		var mid = req.body.mid;
 		//SEQUENCE_INTERNAL_OVERLAP_JUNCTION_LIST = 
 		input_f = `SEQUENCE_ID=example
 SEQUENCE_TEMPLATE=${seq}
