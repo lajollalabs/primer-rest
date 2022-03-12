@@ -32,6 +32,8 @@ httpServer.listen(80);
 httpsServer.listen(443);
 
 app.post('/', ( req, res ) => {
+	//Really confusing, but LEFT = RIGHT and RIGHT = LEFT because we're dealing with RNA and 
+	//Primer3 just assumes that they are arbitrary.
 	let input_f = null;
 	var seq = req.body.seq;
 	if (seq.body.right) {
@@ -42,7 +44,7 @@ SEQUENCE_TEMPLATE=${seq}
 SEQUENCE_FORCE_LEFT_END=${right}
 PRIMER_TASK=generic
 PRIMER_PICK_LEFT_PRIMER=1
-PRIMER_PICK_INTERNAL_OLIGO=0
+PRIMER_PICK_INTERNAL_OLIGO=1
 PRIMER_PICK_RIGHT_PRIMER=1
 PRIMER_OPT_SIZE=20
 PRIMER_MIN_SIZE=18
@@ -52,7 +54,44 @@ PRIMER_PRODUCT_SIZE_RANGE=75-350
 PRIMER_EXPLAIN_FLAG=1
 =
 `
-	} else {
+	} else if (seq.body.left) {
+		console.log ( 'Variant primers' );
+		var left = seq.body.left;
+		input_f = `SEQUENCE_ID=example
+SEQUENCE_TEMPLATE=${seq}
+SEQUENCE_FORCE_RIGHT_END=${left}
+PRIMER_TASK=generic
+PRIMER_PICK_LEFT_PRIMER=1
+PRIMER_PICK_INTERNAL_OLIGO=1
+PRIMER_PICK_RIGHT_PRIMER=1
+PRIMER_OPT_SIZE=20
+PRIMER_MIN_SIZE=18
+PRIMER_MAX_SIZE=30
+PRIMER_MIN_TM=52
+PRIMER_PRODUCT_SIZE_RANGE=75-350
+PRIMER_EXPLAIN_FLAG=1
+=
+`
+	} else if (seq.body.probe) {
+		console.log ( 'Variant primers' );
+		var mid = seq.body.mid;
+		//SEQUENCE_INTERNAL_OVERLAP_JUNCTION_LIST = 
+		input_f = `SEQUENCE_ID=example
+SEQUENCE_TEMPLATE=${seq}
+SEQUENCE_INTERNAL_OVERLAP_JUNCTION_LIST=${mid}
+PRIMER_TASK=generic
+PRIMER_PICK_LEFT_PRIMER=1
+PRIMER_PICK_INTERNAL_OLIGO=1
+PRIMER_PICK_RIGHT_PRIMER=1
+PRIMER_OPT_SIZE=20
+PRIMER_MIN_SIZE=18
+PRIMER_MAX_SIZE=30
+PRIMER_MIN_TM=52
+PRIMER_PRODUCT_SIZE_RANGE=75-350
+PRIMER_EXPLAIN_FLAG=1
+=
+`
+	}else {
 		console.log ( 'Regular primer probe' );
 		input_f = `SEQUENCE_ID=example
 SEQUENCE_TEMPLATE=${seq}
