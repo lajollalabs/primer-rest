@@ -97,7 +97,24 @@ PRIMER_EXPLAIN_FLAG=1
 PRIMER_NUM_RETURN=1
 =
 `
-	}else {
+	} else if (req.body.taqman) {
+		console.log( 'Total primers with taqman' );
+		input_f = `SEQUENCE_ID=example
+SEQUENCE_TEMPLATE=${seq}
+PRIMER_TASK=generic
+PRIMER_PICK_LEFT_PRIMER=1
+PRIMER_PICK_INTERNAL_OLIGO=1
+PRIMER_PICK_RIGHT_PRIMER=1
+PRIMER_OPT_SIZE=20
+PRIMER_MIN_SIZE=18
+PRIMER_MAX_SIZE=25
+PRIMER_MIN_TM=52
+PRIMER_PRODUCT_SIZE_RANGE=75-200
+PRIMER_EXPLAIN_FLAG=1
+PRIMER_NUM_RETURN=1
+=
+`
+	} else {
 		console.log ( 'Regular primer probe' );
 		input_f = `SEQUENCE_ID=example
 SEQUENCE_TEMPLATE=${seq}
