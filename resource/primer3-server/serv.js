@@ -129,10 +129,10 @@ PRIMER_NUM_RETURN=3
 SEQUENCE_TEMPLATE=${seqprobe}
 PRIMER_PICK_INTERNAL_OLIGO=0
 PRIMER_PICK_LEFT_PRIMER=1
+PRIMER_PICK_RIGHT_PRIMER=0
 PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION=12
 PRIMER_MIN_5_PRIMER_OVERLAP_OF_JUNCTION=1
 SEQUENCE_OVERLAP_JUNCTION_LIST=${justprobe}
-PRIMER_PICK_RIGHT_PRIMER=0
 PRIMER_MAX_SIZE=25
 PRIMER_MIN_SIZE=18
 PRIMER_MUST_MATCH_FIVE_PRIME=hnnnn
@@ -197,12 +197,12 @@ PRIMER_EXPLAIN_FLAG=1
 PRIMER_NUM_RETURN=1
 =
 `
-		return enya (input_f,res);
+		return dicey_primer ( enya (input_f,res), true );
 	}
 
 });
 
-
+/*
 app.get ('/', ( req, res ) => {
 	var seq = req.param('seq')
 	console.log( 'Check' );
@@ -222,6 +222,7 @@ PRIMER_EXPLAIN_FLAG=1
 	return enya (input_f, res);
 
 });
+*/
 
 function oligotm ( oligos, res ) {
 	let tms = {}
@@ -280,45 +281,59 @@ function enya (input_f, res) {
 	}
 }
 
-function checkprobe (input_f,res) {
+function dicey_primer (res,amplicon) {
 
 	try {
 	
-
+	let write_str = NULL;
 	var tmpObj = tmp.fileSync({ mode: 0644, prefix: 'projectA-', postfix: '.fa' });
 	console.log("File: ", tmpObj.name);
 	console.log("Filedescriptor: ", tmpObj.fd);
-	//let fseq = res[`PRIMER_LEFT_0_SEQUENCE`]
-	//let rseq = res[`PRIMER_RIGHT_0_SEQUENCE`]
-//	let write_str = `>fprimer
-//${}
-//>rprimer
-//${}
-//`
-
-	let pseq = res[`PRIMER_RIGHT_0_SEQUENCE`]
-	let write_str = `>fprimer
-${pseq}
+	if ( amplicon ) {
+	let fseq = res[`PRIMER_LEFT_0_SEQUENCE`]
+	let rseq = res[`PRIMER_RIGHT_0_SEQUENCE`]
+	write_str = `>fprimer
+${fseq}
+>rprimer
+${rseq}
 `
-  	fs.writeFileSync(tmpObj.name, input_f)
+	} else {
+	let pseq = res[`PRIMER_LEFT_0_SEQUENCE`]
+	write_str = `>fprimer
+${pseq}
+`	
+	}
 
-	exec(`../../dicey_primer/dicey search -i ./primer3_config/ -c 45 -g *fa.gz ${tmpObj.name}`, (error, data, getter) => {
-	if(error){
+  	fs.writeFileSync(tmpObj.name, write_str)
+
+	exec(`../dicey_primer/dicey search -i ../dicey_primer/primer3_config/ -c 45 -g ../dicey_primer/*fa.gz ${tmpObj.name}`, (error, data, getter) => {
+	if( error ){
 		console.log("error",error.message);
 		return;
 	}
 	//console.log("data",data);
 
-  	let lines = data.split ('\n')
-  	let spl = {}
-  	for ( let l of lines )
-  	 {
-		let v = l.split ('=')
-		if (v && v.length>1 && v[0] && v[0].length>0)
-			spl[v[0]]=v[1]
-	 }
+	data = JSON.parse(data);
+	let off_primers = 0;
+	for (let i of data["data"]["primers"]) {
+		off_primers += 1;
+	}
+	let off_amplicons = 0;
+	for (let i of data["data"]["amplicons"]){
+		off_amplicons += 1;
+	}
+
+	let js = {"Off-targets": [
+				"Off-target-primers": off_primers,
+				"Off-target-amplicosn": off_amplicons,
+			]
+			}
+	let merge = {
+				res,
+				js
+				}
 	//console.log ( JSON.stringify( spl ));
-	return res.json (spl) 
+	return merge;
 
 	})
 
@@ -327,7 +342,7 @@ ${pseq}
 	}
 }
 
-
+/*
 app.get('/primer3', (req, res) => {
 
 
@@ -359,5 +374,4 @@ app.get('/primer3', (req, res) => {
 
 
 })
-
-
+*/
