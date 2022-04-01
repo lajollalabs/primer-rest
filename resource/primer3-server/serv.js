@@ -323,10 +323,9 @@ ${pseq}
 		off_amplicons += 1;
 	}
 
-	let js = {"Off-targets": [
-				"Off-target-primers": off_primers,
-				"Off-target-amplicosn": off_amplicons,
-			]
+	let js = {
+				"Off-target-primers" : off_primers,
+				"Off-target-amplicosn" : off_amplicons,
 			}
 	let merge = {
 				res,
