@@ -278,9 +278,55 @@ function enya (input_f, res) {
 	}catch ( err ) {
 		console.error( err );
 	}
-
-
 }
+
+function checkprobe (input_f,res) {
+
+	try {
+	
+
+	var tmpObj = tmp.fileSync({ mode: 0644, prefix: 'projectA-', postfix: '.fa' });
+	console.log("File: ", tmpObj.name);
+	console.log("Filedescriptor: ", tmpObj.fd);
+	//let fseq = res[`PRIMER_LEFT_0_SEQUENCE`]
+	//let rseq = res[`PRIMER_RIGHT_0_SEQUENCE`]
+//	let write_str = `>fprimer
+//${}
+//>rprimer
+//${}
+//`
+
+	let pseq = res[`PRIMER_RIGHT_0_SEQUENCE`]
+	let write_str = `>fprimer
+${pseq}
+`
+  	fs.writeFileSync(tmpObj.name, input_f)
+
+	exec(`../../dicey_primer/dicey search -i ./primer3_config/ -c 45 -g *fa.gz ${tmpObj.name}`, (error, data, getter) => {
+	if(error){
+		console.log("error",error.message);
+		return;
+	}
+	//console.log("data",data);
+
+  	let lines = data.split ('\n')
+  	let spl = {}
+  	for ( let l of lines )
+  	 {
+		let v = l.split ('=')
+		if (v && v.length>1 && v[0] && v[0].length>0)
+			spl[v[0]]=v[1]
+	 }
+	//console.log ( JSON.stringify( spl ));
+	return res.json (spl) 
+
+	})
+
+	}catch ( err ) {
+		console.error( err );
+	}
+}
+
 
 app.get('/primer3', (req, res) => {
 
